@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Pool;
 using TMPro;
@@ -12,47 +13,43 @@ public class GenericSpawner<T> : MonoBehaviour where T : MonoBehaviour
     private readonly int _poolCapacity = 10;
     private readonly int _maxPoolCapacity = 15;
 
-    private int _spawnedCount;
-    private int _createdCount;
+    private ObjectPool<T> _pool;
 
-    protected ObjectPool<T> Pool;
+    public int SpawnedCount { get;  private set; }
+    public int CreatedCount { get;   private set; }
 
-    protected virtual void Awake()
+    public event Action InfoChanged;
+    
+    private void Awake()
     {
-        Pool = new ObjectPool<T>(
+        _pool = new ObjectPool<T>(
             createFunc: () =>
             {
-                _createdCount++;
-                UpdateUI();
+                CreatedCount++;
+                InfoChanged?.Invoke();
                 return Instantiate(_prefab);
             },
             actionOnGet: ActionOnGet,
-            actionOnRelease: (T) =>
-            {
-                UpdateUI();
-                T.gameObject.SetActive(false);
-            },
+            actionOnRelease: (T) => T.gameObject.SetActive(false),
             collectionCheck: true,
             defaultCapacity: _poolCapacity,
             maxSize: _maxPoolCapacity);
     }
-
-    protected virtual void Start()
-    {
-        UpdateUI();
-    }
-
-    private void UpdateUI()
-    {
-        _spawnedText.text = $"{typeof(T)} Spawned: {_spawnedCount}";
-        _createdText.text = $"{typeof(T)} Created: {_createdCount}";
-        _activeText.text = $"{typeof(T)} Active: {Pool.CountActive}";
-    }
-
+    
     protected virtual void ActionOnGet(T prefab)
     {
-        _spawnedCount++;
+        SpawnedCount++;
+        InfoChanged?.Invoke();
         prefab.gameObject.SetActive(true);
-        UpdateUI();
     }
+
+    protected void ReleasePool(T prefab) =>
+        _pool.Release(prefab);
+
+    protected T GetPool() =>
+        _pool.Get();
+
+    public int CountActiveInPool() =>
+        _pool.CountActive;
+
 }

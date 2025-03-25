@@ -16,7 +16,7 @@ public class BombSpawner : GenericSpawner<Bomb>
 
     private void CreateBomb(Vector3 spawnPoint)
     {
-        Bomb bomb = Pool.Get();
+        Bomb bomb = GetPool();
         bomb.transform.position = spawnPoint;
         bomb.Exploded += Release;
     }
@@ -24,6 +24,6 @@ public class BombSpawner : GenericSpawner<Bomb>
     private void Release(Bomb bomb)
     {
         bomb.Exploded -= Release;
-        Pool.Release(bomb);
+        ReleasePool(bomb);
     }
 }

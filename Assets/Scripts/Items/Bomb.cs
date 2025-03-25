@@ -29,7 +29,9 @@ public class Bomb : MonoBehaviour
 
     private void OnEnable()
     {
-        StopCoroutine(_coroutine);
+        if (_coroutine != null)
+            StopCoroutine(_coroutine);
+        
         _material.color = _baseColor;
         _lifeTime = UnityEngine.Random.Range(_minLifeTime, _maxLifeTime + 1);
         StartCooldown();
@@ -37,7 +39,7 @@ public class Bomb : MonoBehaviour
 
     private void StartCooldown() =>
         _coroutine = StartCoroutine(ExplodeAfterTime());
-    
+
     private void Explode()
     {
         Collider[] hit = Physics.OverlapSphere(transform.position, _exploisionRadius);
@@ -46,7 +48,8 @@ public class Bomb : MonoBehaviour
         {
             if (target.TryGetComponent(out Rigidbody component))
             {
-                float attenuation = Mathf.Clamp01(1f - (transform.position - target.transform.position).magnitude / _exploisionRadius);
+                float attenuation =
+                    Mathf.Clamp01(1f - (transform.position - target.transform.position).magnitude / _exploisionRadius);
                 Vector3 direction = (target.transform.position - transform.position).normalized;
 
                 if (attenuation > 0)

@@ -4,16 +4,15 @@ using Random = UnityEngine.Random;
 
 public class CubeSpawner : GenericSpawner<Cube>
 {
-    [SerializeField] private GameObject _mainGround;
+    [SerializeField] private Platform _mainGround;
     [SerializeField] private float _positionY = 50;
     [SerializeField] private float _repeatRate = 2;
 
     public event Action<Vector3> Released;
     
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
-        InvokeRepeating(nameof(GetCube), 0, _repeatRate);
+        InvokeRepeating(nameof(GetPool), 0, _repeatRate);
     }
 
     protected override void ActionOnGet(Cube cube)
@@ -42,9 +41,6 @@ public class CubeSpawner : GenericSpawner<Cube>
         cube.transform.position = GetRandomSpawnPoint();
         cube.Rigidbody.velocity = Vector3.zero;
         
-        Pool.Release(cube);
+        ReleasePool(cube);
     }
-
-    private void GetCube() =>
-        Pool.Get();
 }
