@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(MeshRenderer))]
+[RequireComponent(typeof(MeshRenderer))]
 public class Bomb : MonoBehaviour
 {
     [SerializeField] private float _exploisionRadius;
@@ -16,45 +16,41 @@ public class Bomb : MonoBehaviour
     private MeshRenderer _meshRenderer;
     private Material _material;
     private Color _baseColor;
+    private Coroutine _coroutine;
 
     public event Action<Bomb> Exploded;
-
-    public Rigidbody Rigidbody { get; private set; }
 
     private void Awake()
     {
         _meshRenderer = GetComponent<MeshRenderer>();
         _material = _meshRenderer.material;
-        Rigidbody = GetComponent<Rigidbody>();
         _baseColor = _material.color;
     }
 
     private void OnEnable()
     {
+        StopCoroutine(_coroutine);
         _material.color = _baseColor;
         _lifeTime = UnityEngine.Random.Range(_minLifeTime, _maxLifeTime + 1);
         StartCooldown();
     }
 
-    private void StartCooldown()
-    {
-        StartCoroutine(ExplodeAfterTime());
-    }
-
+    private void StartCooldown() =>
+        _coroutine = StartCoroutine(ExplodeAfterTime());
+    
     private void Explode()
     {
         Collider[] hit = Physics.OverlapSphere(transform.position, _exploisionRadius);
 
-        foreach (var target in hit)
+        foreach (Collider target in hit)
         {
-            if (target.TryGetComponent(out Rigidbody rigidbody))
+            if (target.TryGetComponent(out Rigidbody component))
             {
-                float attenuation =
-                    Mathf.Clamp01(1f - (transform.position - target.transform.position).magnitude / _exploisionRadius);
+                float attenuation = Mathf.Clamp01(1f - (transform.position - target.transform.position).magnitude / _exploisionRadius);
                 Vector3 direction = (target.transform.position - transform.position).normalized;
 
                 if (attenuation > 0)
-                    rigidbody.AddForce(direction * (_explosionForce * attenuation), ForceMode.Impulse);
+                    component.AddForce(direction * (_explosionForce * attenuation), ForceMode.Impulse);
             }
         }
     }
@@ -76,7 +72,5 @@ public class Bomb : MonoBehaviour
         Explode();
 
         Exploded?.Invoke(this);
-
-        yield return null;
     }
 }

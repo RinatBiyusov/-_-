@@ -1,8 +1,6 @@
-using System;
 using UnityEngine;
 using UnityEngine.Pool;
 using TMPro;
-using UnityEngine.UIElements;
 
 public class GenericSpawner<T> : MonoBehaviour where T : MonoBehaviour
 {
@@ -10,15 +8,15 @@ public class GenericSpawner<T> : MonoBehaviour where T : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _spawnedText;
     [SerializeField] private TextMeshProUGUI _createdText;
     [SerializeField] private TextMeshProUGUI _activeText;
-    
+
     private readonly int _poolCapacity = 10;
     private readonly int _maxPoolCapacity = 15;
-    
-    private int _spawnedCount = 0;
-    private int _createdCount = 0;
-    
+
+    private int _spawnedCount;
+    private int _createdCount;
+
     protected ObjectPool<T> Pool;
-    
+
     protected virtual void Awake()
     {
         Pool = new ObjectPool<T>(
@@ -41,15 +39,6 @@ public class GenericSpawner<T> : MonoBehaviour where T : MonoBehaviour
 
     protected virtual void Start()
     {
-        _spawnedText.text = $"{typeof(T)} Spawned: 0";
-        _createdText.text = $"{typeof(T)} Created: 0";
-        _activeText.text = $"{typeof(T)} Active: 0";
-    }
-    
-    protected virtual void ActionOnGet(T prefab)
-    {
-        _spawnedCount++;
-        prefab.gameObject.SetActive(true);
         UpdateUI();
     }
 
@@ -58,5 +47,12 @@ public class GenericSpawner<T> : MonoBehaviour where T : MonoBehaviour
         _spawnedText.text = $"{typeof(T)} Spawned: {_spawnedCount}";
         _createdText.text = $"{typeof(T)} Created: {_createdCount}";
         _activeText.text = $"{typeof(T)} Active: {Pool.CountActive}";
+    }
+
+    protected virtual void ActionOnGet(T prefab)
+    {
+        _spawnedCount++;
+        prefab.gameObject.SetActive(true);
+        UpdateUI();
     }
 }

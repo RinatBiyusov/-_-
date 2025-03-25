@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(ColorChanger), typeof(Rigidbody))]
+[RequireComponent(typeof(ColorChanger), typeof(Rigidbody), typeof(MeshRenderer))]
 public class Cube : MonoBehaviour
 {
-    private ColorChanger _colorChanger;
-    private WaitForSeconds _lifeTime;
     private readonly int _minLifeTime = 2;
     private readonly int _maxLifeTime = 5;
+    
+    private ColorChanger _colorChanger;
+    private WaitForSeconds _lifeTime;
     private MeshRenderer _meshRenderer;
     private bool _isEncountered;
     private Color _color;
@@ -28,7 +29,7 @@ public class Cube : MonoBehaviour
 
     private void OnEnable()
     {
-        _lifeTime = new(UnityEngine.Random.Range(_minLifeTime, _maxLifeTime + 1));
+        _lifeTime = new WaitForSeconds(UnityEngine.Random.Range(_minLifeTime, _maxLifeTime + 1));
     }
 
     private void OnCollisionEnter(Collision collision)
