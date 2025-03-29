@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(ColorChanger), typeof(Rigidbody), typeof(MeshRenderer))]
-public class Cube : MonoBehaviour
+public class Cube : Item
 {
     private readonly int _minLifeTime = 2;
     private readonly int _maxLifeTime = 5;

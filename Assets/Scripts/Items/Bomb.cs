@@ -3,14 +3,14 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshRenderer))]
-public class Bomb : MonoBehaviour
+public class Bomb : Item
 {
-    [SerializeField] private float _exploisionRadius;
+    [SerializeField] private float _explosionRadius;
     [SerializeField] private float _explosionForce;
 
     private readonly int _minLifeTime = 2;
     private readonly int _maxLifeTime = 5;
-    private readonly int _minValueAplha = 0;
+    private readonly int _minValueAlpha = 0;
 
     private float _lifeTime;
     private MeshRenderer _meshRenderer;
@@ -42,14 +42,14 @@ public class Bomb : MonoBehaviour
 
     private void Explode()
     {
-        Collider[] hit = Physics.OverlapSphere(transform.position, _exploisionRadius);
+        Collider[] hit = Physics.OverlapSphere(transform.position, _explosionRadius);
 
         foreach (Collider target in hit)
         {
             if (target.TryGetComponent(out Rigidbody component))
             {
                 float attenuation =
-                    Mathf.Clamp01(1f - (transform.position - target.transform.position).magnitude / _exploisionRadius);
+                    Mathf.Clamp01(1f - (transform.position - target.transform.position).magnitude / _explosionRadius);
                 Vector3 direction = (target.transform.position - transform.position).normalized;
 
                 if (attenuation > 0)
@@ -65,7 +65,7 @@ public class Bomb : MonoBehaviour
 
         while (_lifeTime > elapsedTime)
         {
-            float newAlpha = Mathf.Lerp(initialColor.a, _minValueAplha, elapsedTime / _lifeTime);
+            float newAlpha = Mathf.Lerp(initialColor.a, _minValueAlpha, elapsedTime / _lifeTime);
             elapsedTime += Time.deltaTime;
             _material.color = new Color(initialColor.r, initialColor.g, initialColor.b, newAlpha);
 

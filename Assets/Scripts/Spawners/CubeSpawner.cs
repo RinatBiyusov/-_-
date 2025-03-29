@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using Random = UnityEngine.Random;
 
 public class CubeSpawner : GenericSpawner<Cube>
@@ -7,12 +8,16 @@ public class CubeSpawner : GenericSpawner<Cube>
     [SerializeField] private Platform _mainGround;
     [SerializeField] private float _positionY = 50;
     [SerializeField] private float _repeatRate = 2;
-
-    public event Action<Vector3> Released;
     
+    private WaitForSeconds _repeatWait;
+    
+    public event Action<Vector3> Released;
+
     private void Start()
     {
-        InvokeRepeating(nameof(GetPool), 0, _repeatRate);
+        _repeatWait = new WaitForSeconds(_repeatRate);
+        
+        StartCoroutine(Spawn());
     }
 
     protected override void ActionOnGet(Cube cube)
@@ -35,12 +40,21 @@ public class CubeSpawner : GenericSpawner<Cube>
     private void Release(Cube cube)
     {
         cube.Encountered -= Release;
-        
+
         Released?.Invoke(cube.transform.position);
-        
+
         cube.transform.position = GetRandomSpawnPoint();
         cube.Rigidbody.velocity = Vector3.zero;
-        
-        ReleasePool(cube);
+
+        ReleaseItem(cube);
+    }
+
+    private IEnumerator Spawn()
+    {
+        while (enabled)
+        {
+            GetItem();
+            yield return _repeatWait;
+        }
     }
 }

@@ -1,15 +1,11 @@
 using System;
 using UnityEngine;
 using UnityEngine.Pool;
-using TMPro;
 
-public class GenericSpawner<T> : MonoBehaviour where T : MonoBehaviour
+public class GenericSpawner<T> : MonoBehaviour where T : Item
 {
     [SerializeField] private T _prefab;
-    [SerializeField] private TextMeshProUGUI _spawnedText;
-    [SerializeField] private TextMeshProUGUI _createdText;
-    [SerializeField] private TextMeshProUGUI _activeText;
-
+    
     private readonly int _poolCapacity = 10;
     private readonly int _maxPoolCapacity = 15;
 
@@ -43,10 +39,10 @@ public class GenericSpawner<T> : MonoBehaviour where T : MonoBehaviour
         prefab.gameObject.SetActive(true);
     }
 
-    protected void ReleasePool(T prefab) =>
+    protected void ReleaseItem(T prefab) =>
         _pool.Release(prefab);
 
-    protected T GetPool() =>
+    protected T GetItem() =>
         _pool.Get();
 
     public int CountActiveInPool() =>
