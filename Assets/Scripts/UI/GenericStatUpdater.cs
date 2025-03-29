@@ -8,7 +8,7 @@ public class GenericStatUpdater<T> : MonoBehaviour where T : Item
     [SerializeField] private TextMeshProUGUI _createdTextObject;
     [SerializeField] private TextMeshProUGUI _activeTextObject;
 
-    [SerializeField] protected GenericSpawner<T> _spawner;
+    [SerializeField] private GenericSpawner<T> _spawner;
 
     private void OnEnable()
     {
